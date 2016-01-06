@@ -4,6 +4,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 def get_ingredient_names(valid_only=True):
+    '''
+    Load up global db_ingredients list with ingredients saved in database
+    '''
     global db_ingredients
     if len(db_ingredients) == 0:
         sarg = {'valid': True} if valid_only else {}
@@ -14,6 +17,12 @@ def get_ingredient_names(valid_only=True):
 real_ingredients = set(n.lower() for n in get_ingredient_names())
 
 def extract_ingredients(messy_ingredients):
+    '''
+    Check for valid ingredients in the raw ingredient list and return valid ones
+
+    Args:
+        messy_ingredients(list) -- raw ingredients from API
+    '''
     global real_ingredients
     pure_ingredients = []
     for line in messy_ingredients:
@@ -28,6 +37,13 @@ def extract_ingredients(messy_ingredients):
 
 
 def query_edamam(q, limit=50):
+    '''
+    Query edamam for recipes
+
+    Args:
+        q(str) -- query text argument
+        limit(int) -- max number of recipes
+    '''
     recipes = []
     try:
         cred = 'app_id=' + config['edamam_id'] + '&app_key=' + config['edamam_key']
@@ -48,6 +64,13 @@ def query_edamam(q, limit=50):
 
 
 def query_food2fork(q, limit=50):
+    '''
+    Query food2fork for recipes
+
+    Args:
+        q(str) -- query text argument
+        limit(int) -- max number of recipes
+    '''
     key = 'key=' + config['food2fork_key']
     page = 1
     more = True
@@ -79,6 +102,14 @@ def query_food2fork(q, limit=50):
 
 
 def query_yummly(q, ingredients, limit=50):
+    '''
+    Query yummly for recipes
+
+    Args:
+        q(str) -- query text argument
+        ingredients(list) -- inredients to query
+        limit(int) -- max number of recipes
+    '''  
     ingr_list = ingredients.split(',') if ingredients else []
     recipes = []    
     try:
@@ -105,6 +136,16 @@ def query_yummly(q, ingredients, limit=50):
 
 
 def search(ingredients_csv, text_sarg, test=True, jsonify=False, limit=111):
+    '''
+    Search all recipe APIs
+
+    Args:
+        ingredients_csv(list) -- inredients to query
+        text_sarg(str) -- text to query
+        test(bool) -- get results from db instead of API
+        jsonify(bool) -- output in JSON format
+        limit(int) -- total limit for number of recipes
+    '''     
     recipes = []
     count = 0
     if test:
@@ -128,6 +169,9 @@ def search(ingredients_csv, text_sarg, test=True, jsonify=False, limit=111):
 
 
 def cluster_recipes(recipes, num_clusters = 4, max_words = 3):
+    '''
+    Cluster recipes using K-Means based on their adjective tfidf
+    '''
     data = []
     taste_adjectives = {a['term'] for a in db.food_adjectives.find()}
     for recipe in recipes:
@@ -159,6 +203,9 @@ def cluster_recipes(recipes, num_clusters = 4, max_words = 3):
 
 
 def sort_score_recipes(recipes):
+    '''
+    Score each recipe based on its adjective distance from each genre
+    '''
     genres = get_genre_names()
     scored_recipes = []
     recipe_id = 0
