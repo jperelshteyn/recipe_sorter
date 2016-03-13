@@ -208,12 +208,13 @@ class Recipe:
         return db.recipes.insert(data)        
 
     def get_adjectives(self):
-        adjectives = []
-        for ingr_name in self.ingredients:
-            ingr = Ingredient(ingr_name)
-            if hasattr(ingr, '_id'):
-                adjectives += ingr.get_adjectives()
-        self.adjectives = adjectives
+        if not self.adjectives:
+            self.adjectives = []
+            for ingr_name in self.ingredients:
+                ingr = Ingredient(ingr_name)
+                if hasattr(ingr, '_id'):
+                    self.adjectives += ingr.get_adjectives()
+        return self.adjectives
     
     def get_genre_scores(self, genres):
         genre_scores = {g: {} for g in genres}
