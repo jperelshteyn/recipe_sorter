@@ -1,9 +1,24 @@
-from recipe_classes import *
+from adjective import Adjective
+from genre import Genre
+from ingredient import Ingredient
+from poem import Poem 
+from recipe import Recipe
 from bs4 import BeautifulSoup
 from nltk import wordnet
 from unicodedata import normalize
 from selenium import webdriver
 from textblob import TextBlob as tb
+import cnfg
+import json
+from pymongo import MongoClient
+
+
+# Global variables
+client = MongoClient()
+db = client.recipes
+config = cnfg.load(".recipe_config")
+stop_chars = {',', '.', '?', '!', ';', ':', "'", '"', ')', '('}
+db_ingredients = []
 
 
 def scrape_food_adjectives():

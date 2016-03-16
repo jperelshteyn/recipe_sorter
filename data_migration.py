@@ -2,6 +2,13 @@ from recipe_classes import *
 from os.path import join
 from os import environ
 from os import listdir
+from pymongo import MongoClient
+import json
+
+# Global variables
+client = MongoClient()
+db = client.recipes
+
 
 def export_data(col_names=[]):
     db = client.recipes
